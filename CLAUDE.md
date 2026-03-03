@@ -1,0 +1,1 @@
+Prolog-based contradiction detector for AI-generated spec documents. Decomposes specs into atomic claims, encodes them as Prolog facts, and uses logic programming to find contradictions and inconsistencies.
