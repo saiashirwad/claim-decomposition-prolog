@@ -108,12 +108,29 @@ Two separate inputs to the system:
 
 Both auditable independently. The LLM can generate domain rules, but they're a separate artifact you can vet without re-reading the whole spec.
 
+## Domain rule provenance
+
+Domain rules need a trust level based on where they came from:
+- **Grounded**: extracted from an authoritative source (RFC, API spec, official docs). High trust.
+- **LLM-generated**: world knowledge from training data. Medium trust — convenient but might be wrong.
+- **Human-provided**: manually added during review. High trust.
+
+```prolog
+domain_rule(oauth2_requires_network, grounded, 'RFC 6749').
+domain_rule(jwt_tokens_expire, llm_generated, none).
+domain_rule(our_tokens_never_expire, human_provided, none).
+```
+
 ## Key properties
 
 - **Exhaustive**: Prolog checks all pairs, not just obvious ones
 - **Traceable**: every contradiction comes with the chain of claims that produced it
 - **Incremental**: add new claims and rules, re-query — no need to re-review the whole doc
 - **Composable**: rules are reusable across specs (e.g., "if X requires network and system forbids network, contradiction")
+
+## Goal
+
+Turn a tedious review task into a manageable checklist. The output is specific contradictions and unstated assumptions, each with the chain of claims that produced it. A human confirms or denies 7 focused questions instead of open-ended reviewing a 500-line spec.
 
 ## Open questions
 
