@@ -79,6 +79,35 @@ contradiction(X, Y) :-
     conflicts(X, Y).
 ```
 
+## Implicit contradictions
+
+Explicit contradictions: two stated claims conflict. Prolog handles these directly.
+
+Implicit contradictions: claims only conflict via unstated assumptions. "No network access" and "authenticate via OAuth2" look fine side by side — until you know OAuth2 requires network calls. That knowledge isn't in the spec.
+
+Prolog can find implicit contradictions, but only if the unstated assumptions are encoded as **domain rules** — background facts about how technologies/concepts work, separate from spec claims.
+
+```prolog
+% spec claims (from the document)
+claim(c1, no_network).
+claim(c2, uses_oauth2).
+
+% domain rules (world knowledge, not from the spec)
+requires(oauth2, network).
+
+% implicit contradiction: spec claims X, which requires Y, but spec also claims not-Y
+implicit_contradiction(X, Y) :-
+    claim(X, no_network),
+    claim(Y, uses_oauth2),
+    requires(oauth2, network).
+```
+
+Two separate inputs to the system:
+1. **Spec claims** — extracted from the document
+2. **Domain rules** — world knowledge about how things work
+
+Both auditable independently. The LLM can generate domain rules, but they're a separate artifact you can vet without re-reading the whole spec.
+
 ## Key properties
 
 - **Exhaustive**: Prolog checks all pairs, not just obvious ones
