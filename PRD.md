@@ -56,6 +56,29 @@ Prolog's backtracking searches the entire claim space. No manual N² pairwise ch
 
 Establish foundational claims first. Everything else derives from or must be consistent with axioms. When a contradiction is found, trace it back to which axiom it violates — either the axiom is wrong or the derived claim is.
 
+## Claim categories
+
+Not all claims are verified the same way. Category determines verification method and Prolog encoding strategy.
+
+- **Source-verifiable**: an authoritative doc says true or false. "HTTP 204 returns no body" → check the RFC. Verified *outside* Prolog.
+- **Architectural**: no external source needed — must be consistent with other claims in the same spec. This is where Prolog shines. Internal consistency checks.
+- **Empirical**: can't know from docs or logic — must try it. "Bun's vm module supports async/await in sandboxed contexts." Tagged `needs_spike`, skipped by Prolog.
+- **Opinion**: design decisions, not falsifiable. "We use Bun because it's faster." Excluded from encoding entirely.
+
+```prolog
+category(c1, architectural).
+category(c2, architectural).
+category(c3, source_verifiable).
+category(c4, empirical).
+category(c5, opinion).
+
+% only check contradictions between architectural claims
+contradiction(X, Y) :-
+    category(X, architectural),
+    category(Y, architectural),
+    conflicts(X, Y).
+```
+
 ## Key properties
 
 - **Exhaustive**: Prolog checks all pairs, not just obvious ones
